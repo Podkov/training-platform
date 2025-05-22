@@ -1,0 +1,99 @@
+---
+description: 
+globs: **/api/src/**/*.ts,**/api/src/**/*.js
+alwaysApply: false
+---
+# Backend Rules for Training Platform
+
+Project: `api/` – Express v5 + TypeScript + Prisma + SQLite
+
+---
+
+## 📂 Directory Structure
+
+`api/`
+`├─ prisma/` # schema.prisma + migrations + dev.db (prod uses a different path)
+`├─ src/`
+`│ ├─ controllers/` # HTTP logic → calls to services
+`│ ├─ services/` # business logic, Prisma integration
+`│ ├─ routes/` # endpoint definitions, auth middleware
+`│ ├─ middlewares/` # error handler, auth guard, validators
+`│ ├─ utils/` # helpers: env loader, logger, asyncHandler
+`│ ├─ index.ts` # app setup (express.json(), cors, routes)
+`│ └─ server.ts` # HTTP server launch + graceful shutdown
+`├─ .env` # DATABASE_URL, JWT_SECRET, NODE_ENV
+`└─ tsconfig.json`
+
+
+---
+
+## ⚙️ Scripts (package.json)
+- **dev**: `bun run dev` → `ts-node-dev --respawn src/index.ts`  
+- **build**: `bun run build` → `tsc --project tsconfig.json`  
+- **start**: `bun run start` → `node dist/index.js`  
+- **Prisma**:  
+  - `bunx prisma migrate` → create & apply migrations  
+  - `bunx prisma generate` → generate Prisma client  
+  - `bunx prisma studio` → launch schema browser
+
+---
+
+## 🔐 Authorization & Security
+- **JWT**  
+  - Use a 32+ character `JWT_SECRET` from `.env`.  
+  - Access tokens expire in ~2h; no refresh token for MVP.  
+  - Clients send tokens in `Authorization: Bearer <token>`.  
+- **Password Hashing**  
+  - Use `bcryptjs` with default salt rounds; hash before persisting.  
+- **Role Checks**  
+  - Middleware verifies `req.user.role` (ADMIN/TRAINER/PARTICIPANT).  
+- **Headers**  
+  - Use `helmet` for basic security (CORS, HSTS, etc.).
+
+---
+
+## 🛠 Errors & Validation
+- Validate inputs (body, params) with Zod or Joi at the start of handlers.  
+- Centralize error handling in `middlewares/errorHandler.ts`.  
+- Use proper HTTP status codes:  
+  - 400 Bad Request – validation errors  
+  - 401 Unauthorized – missing/invalid token  
+  - 403 Forbidden – insufficient permissions  
+  - 404 Not Found – missing resources  
+  - 500 Internal Server Error – unexpected failures
+
+---
+
+## 🗄 Prisma & Database
+- Define `User`, `Course`, `Enrollment` with relations in `schema.prisma`.  
+- Run `prisma migrate dev --name <description>` for every schema change.  
+- Import `PrismaClient` from a single file (e.g., `utils/prisma.ts`).  
+- Use transactions for multi-step operations (e.g., enrollments).  
+- On shutdown (SIGINT/SIGTERM), call `prisma.$disconnect()` in `server.ts`.
+
+---
+
+## 📋 Logging & Monitoring
+- Integrate a logger (`winston` or `pino`):  
+  - `info` level for requests, `error` for exceptions.  
+  - Log method, URL, userId, and response time.  
+- Health-check endpoint: `GET /health` returns `{ status: 'ok' }`.
+
+---
+
+## 🧪 Testing
+- Use Jest + Supertest.  
+- For unit tests, mock PrismaClient.  
+- For integration tests, use an in-memory SQLite or separate dev.db.  
+- Aim for ≥80% coverage on auth, course CRUD, and enrollments.
+
+---
+
+## 📦 Build & Deployment
+- **Docker**:  
+  - Dev uses `ts-node-dev`; Prod uses `build` → `start`.  
+  - Expose port `4000`; include a health-check in `docker-compose.yml`.  
+- **Environment**:  
+  - Do not commit `.env`; load via `dotenv` in `index.ts`.  
+
+

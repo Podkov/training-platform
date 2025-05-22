@@ -1,0 +1,33 @@
+---
+description: 
+globs: **/web/src/**/*.tsx,**/web/src/**/*.jsx
+alwaysApply: false
+---
+## React Coding Standards
+
+### Components & Hooks
+- Use only functional components and hooks (no class components).  
+- File order: imports → types/interfaces → main component → helpers → export.  
+- Wrap frequently rendered components in `React.memo()`.  
+- Optimize callbacks with `useCallback` and expensive computations with `useMemo`.  
+- Use `React.lazy()` + `Suspense` for code splitting when needed.  
+- Generate unique IDs with `useId()` for accessibility attributes.
+
+### State & Data Fetching
+- Global state via `useContext` or lightweight libraries (e.g., Zustand); avoid Redux for MVP.  
+- Fetch data with custom hooks (`useFetchCourses`) or React Query (optional).  
+- Prefer optimistic updates (e.g., when enrolling in a course).
+
+### Forms & Validation
+- Use React Hook Form + Zod for schema-based validation.  
+- Display validation errors inline, linked via `aria-describedby`.
+
+### Testing
+- Test components with React Testing Library.  
+- Limit snapshots to pure presentational components.  
+- Cover user interactions (clicks, typing, navigation) in tests.
+
+### TypeScript
+- Use `interface` for props and complex types; avoid `any`.  
+- Avoid non-null assertions (`!`) and type assertions (`as`); add guard logic or fallbacks instead.  
+- Enforce strict TSConfig settings: `strict`, `noImplicitAny`, `strictNullChecks`.  

@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AI Rules for Training Platform
+
+Project: Training Management System  
+Stack: Bun 1.0.25, TypeScript, Express 5, Prisma + SQLite, React 18, Tailwind CSS, Docker Compose, Nginx
+
+## Monorepo Structure  
+Always adhere to this layout:
+
+- `./api` ← backend (Express + TS + Prisma)
+- `./web` ← frontend (React + TS + Tailwind)
+- `./data` ← dev.db file for SQLite
+- `docker-compose.yml`
+
+When modifying the directory structure, always update this section.
+
+If you change or add directories, update this section accordingly.
+
+## Coding Practices
+
+### Expert-Level Solutions
+- Propose elegant, maintainable solutions instead of quick hacks.  
+- Consider performance and scalability trade-offs at design time.  
+- Evaluate architectural alternatives (e.g., monolith vs. microservice).  
+- Focus comments on the "why", not the "what".  
+- Use guard-clauses + early returns to handle errors/edge-cases up front.  
+- Ensure a comprehensive test strategy: unit, integration, E2E where feasible.
+
+### DevTooling & CI
+- Use shared ESLint/Prettier configs at the repo root (e.g., `eslint.config.js`, `.prettierrc`).  
+- In CI/CD, run only the relevant steps (lint, tests, build) for changes in `api/` vs. `web/`.  
+- For Prisma migrations, create a dedicated migration for every schema change (`prisma migrate dev`).
+
+### Documentation
+- Update `README.md` whenever structure or endpoints change significantly.  
+- Follow Conventional Commits and add entries to `CHANGELOG.md`.  

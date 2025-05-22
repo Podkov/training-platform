@@ -1,0 +1,29 @@
+---
+description: 
+globs: **/web/src/**/*.tsx,**/web/src/**/*.jsx,**/web/src/**/*.css
+alwaysApply: false
+---
+## Frontend (React + Tailwind)
+
+### Project Layout
+- `/web/src/components` – single, reusable UI components  
+- `/web/src/pages`      – views with React Router  
+- `/web/src/hooks`      – custom hooks (e.g., data fetching; `useAuth` jako alias)  
+- `/web/src/utils`      – helper functions and validation  
+- `/web/src/styles`     – additional CSS / Tailwind config  
+- `/web/src/contexts`  – React Context providers (e.g., `AuthContext` for auth)  
+
+### Styling – Tailwind CSS
+- Enable JIT mode for faster rebuilds and smaller bundles.  
+- Group utility classes logically using `@apply` in CSS or within components.  
+- Use arbitrary values (e.g., `[w-[200px]]`, `[bg-[#123456]]`) only for truly unique cases.  
+- Organize with `@layer base`, `components`, `utilities` in `tailwind.config.js`.  
+- Use responsive (`sm:`, `md:`, `lg:`) and state variants (`hover:`, `focus:`, `active:`).  
+- Implement dark mode via the `dark:` variant and ensure proper contrast.  
+- Centralize colors, spacing, and breakpoints under `theme.extend` in the config.
+
+### Accessibility (A11y)
+- Always add an `aria-label` to icon-only buttons.  
+- Use semantic HTML elements (`<main>`, `<nav>`, `<section>`).  
+- For dynamic messages, implement `aria-live="polite"` regions.  
+- Manage focus when opening modals and restore it after closing.  
