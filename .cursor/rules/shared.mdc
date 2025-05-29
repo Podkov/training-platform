@@ -15,10 +15,22 @@ Always adhere to this layout:
 - `./web` ← frontend (React + TS + Tailwind)
 - `./data` ← dev.db file for SQLite
 - `docker-compose.yml`
+- Naming Convention: use kebab-case for files and directories (eg. `course-dto.ts`, `enrollment-repository.ts`).
 
 When modifying the directory structure, always update this section.
 
 If you change or add directories, update this section accordingly.
+
+## Naming Conventions
+
+All file and directory names across the monorepo must use **kebab-case**.  
+File suffix conventions must include hyphens to indicate their purpose:
+- Data transfer objects: `-dto.ts`
+- Services/business logic: `-service.ts`
+- Data-access repositories: `-repository.ts`
+- HTTP controllers: `-controller.ts`
+- Middleware modules: `-middleware.ts`
+- Utilities/helpers: `-util.ts`
 
 ## Coding Practices
 

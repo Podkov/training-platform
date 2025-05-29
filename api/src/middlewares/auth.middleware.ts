@@ -11,11 +11,12 @@ declare global {
   }
 }
 
-export const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
+export const verifyAuth = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
   
   if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Brak tokena autoryzacji' });
+    res.status(401).json({ error: 'Brak tokena autoryzacji' });
+    return;
   }
 
   const token = authHeader.split(' ')[1];
@@ -25,18 +26,21 @@ export const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Nieprawidłowy token' });
+    res.status(401).json({ error: 'Nieprawidłowy token' });
+    return;
   }
 };
 
 export const checkRole = (roles: UserRole[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Brak autoryzacji' });
+      res.status(401).json({ error: 'Brak autoryzacji' });
+      return;
     }
 
     if (!roles.includes(req.user.role as UserRole)) {
-      return res.status(403).json({ error: 'Brak uprawnień' });
+      res.status(403).json({ error: 'Brak uprawnień' });
+      return;
     }
 
     next();

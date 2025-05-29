@@ -11,19 +11,24 @@ Project: `api/` – Express v5 + TypeScript + Prisma + SQLite
 
 ## 📂 Directory Structure
 
+Naming Convention: use kebab-case for files and directories (eg. `course-service.ts`, `user-controller.ts`).
+
 `api/`
 `├─ prisma/` # schema.prisma + migrations + dev.db (prod uses a different path)
 `├─ src/`
-`│ ├─ controllers/` # HTTP logic → calls to services
-`│ ├─ services/` # business logic, Prisma integration
-`│ ├─ routes/` # endpoint definitions, auth middleware
-`│ ├─ middlewares/` # error handler, auth guard, validators
-`│ ├─ utils/` # helpers: env loader, logger, asyncHandler
+`│ ├─ dto/` # obiekty DTO (course-dto.ts, enrollment-dto.ts)
+`│ ├─ entities/` # encje domenowe (course-entity.ts, ...)
+`│ ├─ exceptions/` # wyjątki HTTP (bad-request-exception.ts, ...)
+`│ ├─ repositories/` # dostęp do bazy (course-repository.ts, ...)
+`│ ├─ services/` # business logic, Prisma integration (course-service.ts, ...)
+`│ ├─ controllers/` # HTTP logic → calls to services (user-controller.ts, ...)
+`│ ├─ routes/` # endpoint definitions, auth middleware (course-route.ts, ...)
+`│ ├─ middlewares/` # error handler, auth guard, validators (auth-middleware.ts, ...)
+`│ ├─ utils/` # helpers: env loader, logger, asyncHandler (jwt.utils.ts, logger.ts, ...)
 `│ ├─ index.ts` # app setup (express.json(), cors, routes)
-`│ └─ server.ts` # HTTP server launch + graceful shutdown
-`├─ .env` # DATABASE_URL, JWT_SECRET, NODE_ENV
+`│ └─ server.ts`
+`├─ .env`               # DATABASE_URL, JWT_SECRET, NODE_ENV
 `└─ tsconfig.json`
-
 
 ---
 
@@ -94,6 +99,15 @@ Project: `api/` – Express v5 + TypeScript + Prisma + SQLite
   - Dev uses `ts-node-dev`; Prod uses `build` → `start`.  
   - Expose port `4000`; include a health-check in `docker-compose.yml`.  
 - **Environment**:  
-  - Do not commit `.env`; load via `dotenv` in `index.ts`.  
+  - Do not commit `.env`; load via `dotenv` in `index.ts`.
 
+## Naming Conventions
 
+All backend source files and folders must use **kebab-case**.  
+Suffix conventions (with hyphens) to reveal module purpose:
+- Controllers: `-controller.ts`
+- Services: `-service.ts`
+- Repositories: `-repository.ts`
+- Middleware: `-middleware.ts`
+- DTO definitions: `-dto.ts`
+- Utility helpers: `-util.ts`

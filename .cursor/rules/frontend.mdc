@@ -1,6 +1,6 @@
 ---
 description: 
-globs: **/web/src/**/*.tsx,**/web/src/**/*.jsx,**/web/src/**/*.css
+globs: **/web/src/**/*.tsx,**/web/src/**/*.jsx,**/web/src/**/*.css,**/web/src/**/*.ts
 alwaysApply: false
 ---
 ## Frontend (React + Tailwind)
@@ -27,3 +27,16 @@ alwaysApply: false
 - Use semantic HTML elements (`<main>`, `<nav>`, `<section>`).  
 - For dynamic messages, implement `aria-live="polite"` regions.  
 - Manage focus when opening modals and restore it after closing.  
+
+## Naming Conventions
+
+Component files in `/web/src/components` use **PascalCase** (e.g. `UserCard.tsx`).  
+Custom React hooks in `/web/src/hooks` start with `use` and use **PascalCase** (e.g. `useCurrentUser.ts`).  
+Context providers in `/web/src/contexts` use **PascalCase** (e.g. `AuthProvider.tsx`).  
+Utility modules in `/web/src/utils` and style files in `/web/src/styles` use **kebab-case**.  
+Module suffix conventions (with hyphens) to indicate purpose:
+- Data transfer objects: `-dto.ts`
+- Services/business logic: `-service.ts`
+- Data-access repositories: `-repository.ts`
+- Middleware modules: `-middleware.ts`
+- Utilities/helpers: `-util.ts`
