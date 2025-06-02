@@ -125,10 +125,12 @@ DATABASE_URL="file:../../data/dev.db"
 JWT_SECRET="twoj-tajny-klucz-min-32-znaki-dla-bezpieczenstwa"
 NODE_ENV="development"
 PORT=4000
+CORS_ORIGIN="http://localhost,http://localhost:3000"
 ```
 
 ### 2. Database Setup
 ```bash
+# W katalogu głównym projektu
 cd api
 bunx prisma migrate dev --name init
 bunx prisma generate
@@ -143,14 +145,19 @@ bunx prisma db seed
 ## Uruchomienie
 
 ### 1. Development Mode (Recommended)
+
+#### Backend (API)
 ```bash
-# Terminal 1 - Backend
+# W katalogu api/
 cd api
 bun install
 bun run dev
 # API dostępne na: http://localhost:4000
+```
 
-# Terminal 2 - Frontend  
+#### Frontend (Web)
+```bash
+# W katalogu web/
 cd web
 bun install
 bun run dev
@@ -158,20 +165,79 @@ bun run dev
 ```
 
 ### 2. Production Mode (Docker)
-```bash
-# Cała aplikacja
-docker-compose up --build
 
-# Tylko frontend (po uruchomieniu API)
-cd web
-bun run build
-bun run preview
+#### Przygotowanie
+1. Upewnij się, że masz zainstalowane:
+   - Docker
+   - Docker Compose
+   - Git
+
+2. Sklonuj repozytorium:
+```bash
+git clone <repo-url>
+cd training-platform
 ```
 
-**URLs:**
-- Frontend: http://localhost:3000 (dev) / http://localhost:80 (prod)
+3. Skonfiguruj zmienne środowiskowe:
+```bash
+# Skopiuj przykładowy plik .env
+cp api/.env.example api/.env
+# Edytuj plik .env i ustaw odpowiednie wartości
+```
+
+#### Uruchomienie
+```bash
+# Zbuduj i uruchom wszystkie kontenery
+docker-compose up --build
+
+# Lub w trybie detached (w tle)
+docker-compose up -d --build
+```
+
+#### Dostęp do aplikacji
+- Frontend: http://localhost
 - Backend API: http://localhost:4000
 - Health Check: http://localhost:4000/health
+
+#### Przydatne komendy Docker
+```bash
+# Zatrzymanie kontenerów
+docker-compose down
+
+# Przeglądanie logów
+docker-compose logs -f api    # logi API
+docker-compose logs -f web    # logi frontendu
+
+# Restart pojedynczego serwisu
+docker-compose restart api
+docker-compose restart web
+
+# Sprawdzenie statusu kontenerów
+docker-compose ps
+```
+
+### 3. Troubleshooting
+
+#### Częste problemy i rozwiązania
+
+1. **Problem z CORS**
+   - Sprawdź czy w pliku `api/.env` masz poprawnie ustawioną zmienną `CORS_ORIGIN`
+   - Dla development: `CORS_ORIGIN="http://localhost,http://localhost:3000"`
+   - Dla production: `CORS_ORIGIN="http://localhost"`
+
+2. **Problem z bazą danych**
+   - Sprawdź czy plik `data/dev.db` istnieje
+   - Wykonaj ponownie migracje: `bunx prisma migrate reset`
+   - Sprawdź uprawnienia do pliku bazy danych
+
+3. **Problem z portami**
+   - Sprawdź czy porty 80 (frontend) i 4000 (backend) są wolne
+   - Możesz zmienić porty w `docker-compose.yml`
+
+4. **Problem z Docker**
+   - Wyczyść cache: `docker-compose build --no-cache`
+   - Usuń wszystkie kontenery: `docker-compose down -v`
+   - Sprawdź logi: `docker-compose logs -f`
 
 ## API Documentation
 

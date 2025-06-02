@@ -6,7 +6,7 @@ import { Table, TableHeader, TableRow, TableCell, TableBody } from '../../compon
 import { Pagination } from '../../components/common/Pagination'; // Założenie, że istnieje taki komponent
 import { ChangeUserRoleModal } from '../../components/admin/ChangeUserRoleModal'; // Import modala zmiany roli
 import { ConfirmDeleteModal } from '../../components/common/ConfirmDeleteModal'; // Import modala potwierdzenia usunięcia
-import { CreateUserModal, CreateUserFormData } from '../../components/admin/CreateUserModal'; // Import modala tworzenia użytkownika
+import { CreateUserModal } from '../../components/admin/CreateUserModal'; // Import modala tworzenia użytkownika
 
 export const UserManagementPage: React.FC = () => {
   const [userListResponse, setUserListResponse] = useState<AdminUserListResponseDto | null>(null);

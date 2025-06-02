@@ -28,7 +28,7 @@ export class CourseRepository {
   async findAll(query: CourseQueryDto = {}): Promise<{ courses: CourseResponseDto[], total: number }> {
     const { status, page = 1, limit = 10, enrolledForUserId } = query;
     
-    const whereClause: Prisma.CourseWhereInput = {};
+    const whereClause: any = {};
 
     if (status) {
       whereClause.status = status;

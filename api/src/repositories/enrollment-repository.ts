@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { 
   EnrollDto,
   CancelEnrollmentDto,
@@ -286,7 +286,7 @@ export class EnrollmentRepository {
     }
 
     // Get affected users before cancellation
-    const affectedEnrollments = await this.prisma.enrollment.findMany({
+    const affectedEnrollments: Array<{ userId: number }> = await this.prisma.enrollment.findMany({
       where: {
         ...(userId && { userId }),
         ...(courseId && { courseId }),
@@ -295,7 +295,7 @@ export class EnrollmentRepository {
       select: { userId: true }
     });
 
-    const affectedUsers = [...new Set(affectedEnrollments.map(e => e.userId))];
+    const affectedUsers: Array<number> = [...new Set(affectedEnrollments.map(e => e.userId))];
 
     // Cancel enrollments
     const result = await this.prisma.enrollment.updateMany({

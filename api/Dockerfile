@@ -1,31 +1,33 @@
-FROM oven/bun:1.0.25 as builder
+FROM node:20-bullseye-slim as builder
 
 WORKDIR /app
 
-COPY package.json bun.lock ./
-RUN bun install
+COPY package.json package-lock.json ./
+RUN npm install
 
 COPY . .
-# Najpierw generujemy Prismę
-RUN bunx prisma generate
-# Potem budujemy TypeScript
-RUN bun run build
-# Debugowanie
+
+# Debug: Sprawdź, czy schema.prisma istnieje
+RUN echo "--- Checking for schema.prisma ---" && ls -la prisma/schema.prisma && cat prisma/schema.prisma
+
+# Generujemy klienta Prisma
+RUN npx prisma generate
+
+# Budujemy TypeScript
+RUN npm run build
 RUN ls -la dist/
 
-FROM oven/bun:1.0.25-slim
+FROM node:20-bullseye-slim
 
 WORKDIR /app
 
 # Kopiujemy tylko niezbędne pliki
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Instalujemy tylko zależności produkcyjne
-RUN bun install --no-dev
 
 # Instalujemy curl dla healthchecka
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
@@ -36,12 +38,7 @@ ENV DATABASE_URL=file:/app/prisma/dev.db
 
 EXPOSE 4000
 
-# Zmieniamy healthcheck na prostszy
-HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:4000/health || exit 1
 
-# Debugowanie
-RUN ls -la
-
-# Inicjalizacja bazy danych i uruchomienie aplikacji
-CMD echo "Starting API..." && bunx prisma migrate deploy && echo "Database migrated" && bun run start 
+CMD ["npm", "start"]
