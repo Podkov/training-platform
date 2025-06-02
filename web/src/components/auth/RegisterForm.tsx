@@ -1,8 +1,17 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, type RegisterData } from '../../services/auth.service';
-import { useAuth } from '../../hooks/useAuth';
+import { z } from 'zod';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { Button } from '../common/Button';
+
+const registerSchema = z.object({
+  email: z.string().email('Nieprawidłowy adres email'),
+  password: z.string().min(6, 'Hasło musi mieć minimum 6 znaków'),
+  role: z.enum(['ADMIN', 'TRAINER', 'PARTICIPANT']).default('PARTICIPANT'),
+});
+
+type RegisterData = z.infer<typeof registerSchema>;
 
 export const RegisterForm = () => {
   const { register: registerUser, error } = useAuth();
@@ -12,23 +21,23 @@ export const RegisterForm = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema) as any,
     defaultValues: {
       role: 'PARTICIPANT',
     },
   });
 
-  const onSubmit = async (data: RegisterData) => {
+  const onSubmit = handleSubmit(async (data: RegisterData) => {
     try {
-      await registerUser(data);
+      await registerUser(data.email, data.password, data.role);
       navigate('/login', { state: { fromRegister: true, email: data.email } });
     } catch (err) {
       // Błąd jest już obsługiwany w useAuth
     }
-  };
+  });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
+    <form onSubmit={onSubmit} className="space-y-4 w-full max-w-md">
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email
@@ -79,15 +88,18 @@ export const RegisterForm = () => {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <button
+      <Button
         type="submit"
-        disabled={isSubmitting}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+        isLoading={isSubmitting}
+        fullWidth
       >
         {isSubmitting ? 'Rejestracja...' : 'Zarejestruj się'}
-      </button>
+      </Button>
+
       <div className="text-center mt-4">
-        <Link to="/login" className="text-indigo-600 hover:underline">Zaloguj się</Link>
+        <Link to="/login" className="text-indigo-600 hover:underline">
+          Zaloguj się
+        </Link>
       </div>
     </form>
   );

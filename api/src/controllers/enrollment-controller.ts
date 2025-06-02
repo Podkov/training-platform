@@ -139,4 +139,71 @@ export class EnrollmentController {
       res.status(statusCode).json(errorResponse);
     }
   }
+
+  /**
+   * GET /enrollments/courses/:courseId/history - Get course enrollment history (admin only)
+   */
+  static async getCourseEnrollmentHistory(req: Request, res: Response): Promise<void> {
+    try {
+      const currentUser = req.user as JwtPayload;
+      const courseId = parseInt(req.params.courseId);
+
+      if (isNaN(courseId)) {
+        res.status(400).json({ error: 'Invalid course ID' });
+        return;
+      }
+
+      const enrollmentHistory = await enrollmentService.getCourseEnrollmentHistory(courseId, currentUser);
+      res.json(enrollmentHistory);
+    } catch (error) {
+      const statusCode = getHttpStatusCode(error);
+      const errorResponse = formatErrorResponse(error);
+      res.status(statusCode).json(errorResponse);
+    }
+  }
+
+  /**
+   * DELETE /enrollments/courses/:courseId/users/:userId/enroll - Cancel another user's enrollment (admin/trainer only)
+   */
+  static async cancelEnrollmentByAdmin(req: Request, res: Response): Promise<void> {
+    try {
+      const currentUser = req.user as JwtPayload;
+      const courseId = parseInt(req.params.courseId);
+      const userId = parseInt(req.params.userId);
+
+      if (isNaN(courseId) || isNaN(userId)) {
+        res.status(400).json({ error: 'Invalid course or user ID' });
+        return;
+      }
+
+      const result = await enrollmentService.cancelEnrollmentForUser(courseId, userId, currentUser);
+      res.json(result);
+    } catch (error) {
+      const statusCode = getHttpStatusCode(error);
+      const errorResponse = formatErrorResponse(error);
+      res.status(statusCode).json(errorResponse);
+    }
+  }
+
+  /**
+   * DELETE /enrollments/courses/:courseId/cancel-all - Cancel all enrollments for a course (admin/trainer only)
+   */
+  static async bulkCancelCourse(req: Request, res: Response): Promise<void> {
+    try {
+      const currentUser = req.user as JwtPayload;
+      const courseId = parseInt(req.params.courseId);
+
+      if (isNaN(courseId)) {
+        res.status(400).json({ error: 'Invalid course ID' });
+        return;
+      }
+
+      const result = await enrollmentService.bulkCancelCourse(courseId, currentUser);
+      res.json(result);
+    } catch (error) {
+      const statusCode = getHttpStatusCode(error);
+      const errorResponse = formatErrorResponse(error);
+      res.status(statusCode).json(errorResponse);
+    }
+  }
 } 

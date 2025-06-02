@@ -6,9 +6,10 @@ import {
   EnrollDto,
   CancelEnrollmentDto,
   EnrollmentResponseDto,
-  UserCoursesResponseDto
+  UserCoursesResponseDto,
+  BulkEnrollmentResponseDto
 } from '../dto/enrollment-dto';
-import { UserRole } from '../entities/status-enums';
+import { UserRole, EnrollmentStatus } from '../entities/status-enums';
 import { JwtPayload } from '../utils/jwt.utils';
 import { ForbiddenException, NotFoundException, BadRequestException } from '../exceptions';
 import { UserEntity } from '../entities/user-entity';
@@ -119,6 +120,22 @@ export class EnrollmentService {
       throw NotFoundException.course(courseId);
     }
 
+    return this.enrollmentRepository.findAll({ courseId, status: EnrollmentStatus.Active });
+  }
+
+  async getCourseEnrollmentHistory(courseId: number, currentUser: JwtPayload): Promise<EnrollmentResponseDto[]> {
+    const user = await this.userRepository.findById(currentUser.userId);
+    if (!user || user.role !== UserRole.Admin) {
+      throw ForbiddenException.insufficientRole([UserRole.Admin], user?.role || UserRole.Participant, 'view course enrollment history');
+    }
+
+    // Check if course exists
+    const course = await this.courseRepository.findById(courseId);
+    if (!course) {
+      throw NotFoundException.course(courseId);
+    }
+
+    // Return all enrollments (active and cancelled) for this course
     return this.enrollmentRepository.findAll({ courseId });
   }
 
@@ -153,5 +170,46 @@ export class EnrollmentService {
     ]);
 
     return { total, active, cancelled };
+  }
+
+  async cancelEnrollmentForUser(courseId: number, targetUserId: number, currentUser: JwtPayload): Promise<EnrollmentResponseDto> {
+    const user = await this.userRepository.findById(currentUser.userId);
+    if (!user || (user.role !== UserRole.Admin && user.role !== UserRole.Trainer)) {
+      throw ForbiddenException.insufficientRole([UserRole.Admin, UserRole.Trainer], user?.role || UserRole.Participant, 'cancel user enrollment');
+    }
+
+    // Check if course exists
+    const course = await this.courseRepository.findById(courseId);
+    if (!course) {
+      throw NotFoundException.course(courseId);
+    }
+
+    // Cancel user's enrollment
+    const dto: CancelEnrollmentDto = { courseId };
+    const result = await this.enrollmentRepository.cancel(targetUserId, dto);
+    if (!result) {
+      throw NotFoundException.enrollment();
+    }
+    return result;
+  }
+
+  /**
+   * Cancel all enrollments for a course (admin/trainer only)
+   */
+  async bulkCancelCourse(courseId: number, currentUser: JwtPayload): Promise<BulkEnrollmentResponseDto> {
+    const user = await this.userRepository.findById(currentUser.userId);
+    if (!user || (user.role !== UserRole.Admin && user.role !== UserRole.Trainer)) {
+      throw ForbiddenException.insufficientRole([UserRole.Admin, UserRole.Trainer], user?.role || UserRole.Participant, 'cancel all enrollments for course');
+    }
+
+    // Check if course exists
+    const course = await this.courseRepository.findById(courseId);
+    if (!course) {
+      throw NotFoundException.course(courseId);
+    }
+
+    // Cancel all active enrollments for this course
+    const result = await this.enrollmentRepository.bulkCancel({ courseId, reason: 'Cancelled by admin' });
+    return result;
   }
 } 

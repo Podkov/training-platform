@@ -45,4 +45,26 @@ router.get('/courses/:courseId',
   EnrollmentController.getEnrollmentsByCourse
 );
 
+// GET /enrollments/courses/:courseId/history - Get course enrollment history (admin only)
+router.get('/courses/:courseId/history', 
+  verifyAuth, 
+  checkRole(['ADMIN']), 
+  EnrollmentController.getCourseEnrollmentHistory
+);
+
+// DELETE /enrollments/courses/:courseId/users/:userId/enroll - Cancel another user's enrollment (admin/trainer only)
+router.delete('/courses/:courseId/users/:userId/enroll',
+  verifyAuth,
+  checkRole(['ADMIN','TRAINER']),
+  EnrollmentController.cancelEnrollmentByAdmin
+);
+
+// DELETE /enrollments/courses/:courseId/cancel-all - Cancel all enrollments for a course (admin/trainer only)
+router.delete(
+  '/courses/:courseId/cancel-all',
+  verifyAuth,
+  checkRole(['ADMIN','TRAINER']),
+  EnrollmentController.bulkCancelCourse
+);
+
 export const enrollmentRouter = router; 

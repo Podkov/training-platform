@@ -35,11 +35,18 @@ export interface EnrollmentResponseDto {
   userId: number;
   courseId: number;
   status: EnrollmentStatus;
+  createdAt: Date;
+  updatedAt: Date;
   course?: {
     id: number;
     title: string;
     description: string;
     status: string;
+  };
+  user?: {
+    id: number;
+    email: string;
+    role: string;
   };
 }
 

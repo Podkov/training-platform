@@ -224,26 +224,25 @@ export class CourseRepository {
 
     // Use transaction to ensure data consistency
     const result = await this.prisma.$transaction(async (tx) => {
-      let enrollmentsCancelled = 0;
+      let processedCount = 0;
 
-      // Cancel all active enrollments if any
-      if (courseEntity.hasActiveEnrollments()) {
+      if (force) {
+        // Delete all enrollments for this course
+        const deleteResult = await tx.enrollment.deleteMany({ where: { courseId: id } });
+        processedCount = deleteResult.count;
+      } else if (courseEntity.hasActiveEnrollments()) {
+        // Cancel active enrollments
         const cancelResult = await tx.enrollment.updateMany({
-          where: { 
-            courseId: id,
-            status: 'active'
-          },
+          where: { courseId: id, status: 'active' },
           data: { status: 'cancelled' }
         });
-        enrollmentsCancelled = cancelResult.count;
+        processedCount = cancelResult.count;
       }
 
       // Delete the course
-      await tx.course.delete({
-        where: { id }
-      });
+      await tx.course.delete({ where: { id } });
 
-      return enrollmentsCancelled;
+      return processedCount;
     });
 
     return {

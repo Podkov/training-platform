@@ -1,74 +1,99 @@
-import { createContext, ReactNode, useContext, useState, useEffect, useCallback, FC } from 'react';
-import { authService, type LoginData, type RegisterData } from '../services/auth.service';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { api } from '../services/api';
 
-export interface User {
+interface User {
+  id: number;
   email: string;
   role: 'ADMIN' | 'TRAINER' | 'PARTICIPANT';
 }
 
-interface AuthContextValue {
+interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  login(data: LoginData): Promise<void>;
-  register(data: RegisterData): Promise<void>;
-  logout(): void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, role: string) => Promise<void>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const login = useCallback(async (data: LoginData) => {
-    setError(null);
-    console.log('🔄 Próba logowania:', data.email, data.password);
-    const { token } = await authService.login(data);
-    authService.setToken(token);
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    console.log('🔑 Zalogowano jako:', payload.email, 'rola:', payload.role);
-    setUser({ email: payload.email, role: payload.role });
-  }, []);
-
-  const register = useCallback(async (data: RegisterData) => {
-    setError(null);
-    // Rejestracja użytkownika, bez automatycznego logowania
-    await authService.register(data);
-  }, []);
-
-  const logout = useCallback(() => {
-    authService.logout();
-    setUser(null);
-  }, []);
-
   useEffect(() => {
-    const token = authService.getToken();
+    const token = localStorage.getItem('token');
     if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({ email: payload.email, role: payload.role });
-      } catch {
-        authService.logout();
-      }
+      fetchUser();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  const isAuthenticated = !!user;
+  const fetchUser = async () => {
+    try {
+      const response = await api.get('/users/me');
+      setUser(response.data);
+    } catch (err) {
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      setError(null);
+      const response = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', response.data.token);
+      await fetchUser();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Błąd logowania');
+      throw err;
+    }
+  };
+
+  const register = async (email: string, password: string, role: string) => {
+    try {
+      setError(null);
+      const response = await api.post('/auth/register', { email, password, role });
+      localStorage.setItem('token', response.data.token);
+      await fetchUser();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Błąd rejestracji');
+      throw err;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, error, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuthContext = (): AuthContextValue => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+} 

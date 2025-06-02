@@ -114,11 +114,11 @@ export class UserService {
 
     // Additional password validation
     if (dto.newPassword.length < 6) {
-      throw BadRequestException.validation('newPassword', dto.newPassword, 'Password must be at least 6 characters long');
+      throw BadRequestException.validation('newPassword', dto.newPassword, 'Hasło musi mieć co najmniej 6 znaków.');
     }
 
     if (dto.currentPassword === dto.newPassword) {
-      throw BadRequestException.validation('newPassword', dto.newPassword, 'New password must be different from current password');
+      throw BadRequestException.validation('newPassword', dto.newPassword, 'Nowe hasło musi być inne niż obecne.');
     }
 
     const updatedUser = await this.userRepository.changePassword(currentUser.userId, dto);
@@ -177,7 +177,7 @@ export class UserService {
 
     // For self-deletion, password is required
     if (currentUser.userId === dto.id && !dto.password) {
-      throw BadRequestException.validation('password', dto.password, 'Password is required for self-deletion');
+      throw BadRequestException.validation('password', dto.password, 'Hasło jest wymagane do samodzielnego usunięcia konta.');
     }
 
     const result = await this.userRepository.delete(dto);

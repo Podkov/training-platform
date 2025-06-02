@@ -237,6 +237,13 @@ export class EnrollmentRepository {
             description: true,
             status: true
           }
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true
+          }
         }
       },
       orderBy: { id: 'desc' }
@@ -255,7 +262,16 @@ export class EnrollmentRepository {
         }
       });
 
-      return enrollmentEntity.toJSON() as EnrollmentResponseDto;
+      return {
+        ...enrollmentEntity.toJSON(),
+        createdAt: (enrollment as any).createdAt,
+        updatedAt: (enrollment as any).updatedAt,
+        user: {
+          id: enrollment.user.id,
+          email: enrollment.user.email,
+          role: enrollment.user.role
+        }
+      } as EnrollmentResponseDto;
     });
   }
 
@@ -384,6 +400,8 @@ export class EnrollmentRepository {
 
       return {
         ...enrollmentEntity.toJSON(),
+        createdAt: (enrollment as any).createdAt,
+        updatedAt: (enrollment as any).updatedAt,
         user: {
           id: enrollment.user.id,
           email: enrollment.user.email,

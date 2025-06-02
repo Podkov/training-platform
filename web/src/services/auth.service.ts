@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-const API_URL = 'http://localhost:4000';
+import { api } from './api';
 
 export const loginSchema = z.object({
   email: z.string().email('Nieprawidłowy adres email'),
@@ -20,54 +19,26 @@ export interface AuthResponse {
 
 export const authService = {
   async login(data: LoginData): Promise<AuthResponse> {
-    console.log('📤 Wysyłanie żądania logowania do API...');
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      console.error('❌ Błąd odpowiedzi z API:', response.status);
-      const error = await response.json();
-      throw new Error(error.error || 'Błąd logowania');
-    }
-
-    console.log('📥 Otrzymano odpowiedź z API');
-    return response.json();
+    localStorage.removeItem('token');
+    
+    const response = await api.post('/auth/login', data);
+    return response.data;
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    console.log('📤 Wysyłanie żądania rejestracji do API...');
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      console.error('❌ Błąd odpowiedzi z API:', response.status);
-      const error = await response.json();
-      throw new Error(error.error || 'Błąd rejestracji');
-    }
-
-    console.log('📥 Otrzymano odpowiedź z API');
-    return response.json();
+    const response = await api.post('/auth/register', data);
+    return response.data;
   },
 
   logout() {
-    console.log('🗑️ Usuwanie tokena z localStorage');
     localStorage.removeItem('token');
   },
 
   getToken(): string | null {
-    const token = localStorage.getItem('token');
-    console.log('🔍 Sprawdzanie tokena:', token ? 'znaleziono' : 'brak');
-    return token;
+    return localStorage.getItem('token');
   },
 
   setToken(token: string) {
-    console.log('💾 Zapisywanie tokena w localStorage');
     localStorage.setItem('token', token);
   },
 }; 
