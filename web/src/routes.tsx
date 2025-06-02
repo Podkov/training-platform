@@ -8,6 +8,12 @@ const DashboardPage = React.lazy(() => import('./pages/dashboard/DashboardPage')
 const CourseListPage = React.lazy(() => import('./pages/courses/CourseListPage'));
 const CourseDetailsPage = React.lazy(() => import('./pages/courses/CourseDetailsPage'));
 const ProfilePage = React.lazy(() => import('./pages/profile/ProfilePage'));
+const AdminPage = React.lazy(() => import('./pages/admin/AdminPage'));
+const UserManagementPage = React.lazy(() => import('./pages/admin/UserManagementPage'));
+const AdminStatisticsPage = React.lazy(() => import('./pages/admin/AdminStatisticsPage'));
+
+// Potrzebujemy ProtectedRoute do sprawdzania ról
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const AppRoutes = () => {
   return (
@@ -31,6 +37,34 @@ export const AppRoutes = () => {
         <Route path="/courses" element={<CourseListPage />} />
         <Route path="/courses/:id" element={<CourseDetailsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        
+        {/* Trasa dla Panelu Administratora */}
+        <Route 
+          path="/admin" 
+          element={(
+            <ProtectedRoute requiredRole="ADMIN">
+              <AdminPage />
+            </ProtectedRoute>
+          )}
+        />
+        {/* Trasa dla Zarządzania Użytkownikami w Panelu Admina */}
+        <Route
+          path="/admin/users"
+          element={(
+            <ProtectedRoute requiredRole="ADMIN">
+              <UserManagementPage />
+            </ProtectedRoute>
+          )}
+        />
+        {/* Trasa dla Statystyk Systemu w Panelu Admina */}
+        <Route
+          path="/admin/statistics"
+          element={(
+            <ProtectedRoute requiredRole="ADMIN">
+              <AdminStatisticsPage />
+            </ProtectedRoute>
+          )}
+        />
         
         {/* Przekierowanie */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

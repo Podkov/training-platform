@@ -7,7 +7,7 @@ import {
   DeleteUserResponseDto,
   ChangePasswordDto
 } from '../dto/user-dto';
-import { ChangeUserRoleDto, AdminUserListDto } from '../dto/admin-dto';
+import { ChangeUserRoleDto, AdminUserListDto, CreateUserByAdminDto } from '../dto/admin-dto';
 import { UserRole } from '../entities/status-enums';
 import { UserEntity } from '../entities/user-entity';
 import { 
@@ -249,16 +249,16 @@ export class UserRepository {
     // Get admin user to validate permissions
     const admin = await this.prisma.user.findUnique({
       where: { id: adminId },
-      select: { role: true }
+      select: { role: true, email: true }
     });
 
-    if (!admin) {
+    if (!admin || !admin.email) {
       throw NotFoundException.user(adminId);
     }
 
     const adminEntity = UserEntity.create({
       id: adminId,
-      email: '',
+      email: admin.email,
       role: admin.role as UserRole
     });
 
@@ -283,11 +283,20 @@ export class UserRepository {
       throw NotFoundException.user(userId);
     }
 
+    // Krytyczna walidacja emaila użytkownika docelowego PRZED próbą utworzenia encji.
+    // To powinno zapobiec błędowi "Email cannot be empty" z UserEntity.create poniżej.
+    if (!targetUser.email || String(targetUser.email).trim() === '') {
+      throw new BadRequestException(
+        `User (ID: ${userId}) has an invalid email in the database. Cannot change role.`,
+        'INVALID_TARGET_USER_EMAIL'
+      );
+    }
+
     try {
-      // Create entity and validate role transition
+      // Tworzenie targetEntity. Jeśli email przeszedł powyższą walidację, nie powinien tu wystąpić błąd "Email cannot be empty".
       const targetEntity = UserEntity.create({
         id: targetUser.id,
-        email: targetUser.email,
+        email: targetUser.email, // targetUser.email jest tutaj sprawdzonym stringiem
         role: targetUser.role as UserRole,
         enrollmentCount: targetUser._count.enrollments
       });
@@ -420,14 +429,75 @@ export class UserRepository {
    * Check if email is already taken
    */
   async emailExists(email: string, excludeUserId?: number): Promise<boolean> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: { id: true }
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        id: excludeUserId ? { not: excludeUserId } : undefined,
+      },
     });
-    
-    if (!user) return false;
-    if (excludeUserId && user.id === excludeUserId) return false;
-    
-    return true;
+    return !!user;
+  }
+
+  /**
+   * Count all users
+   */
+  async countAll(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
+  /**
+   * Count users by role
+   */
+  async countByRole(role: UserRole): Promise<number> {
+    return this.prisma.user.count({
+      where: { role },
+    });
+  }
+
+  /**
+   * Create a new user by an administrator.
+   * Includes password hashing and role assignment.
+   */
+  async createByAdmin(dto: CreateUserByAdminDto): Promise<UserResponseDto> {
+    const { email, password, role } = dto;
+
+    // Check if user already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw BadRequestException.businessRule('Użytkownik o podanym adresie e-mail już istnieje.');
+    }
+
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create the user
+    const newUser = await this.prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        _count: {
+          select: { enrollments: { where: { status: 'active' } } },
+        },
+      },
+    });
+
+    // Create entity for consistent response
+    const userEntity = UserEntity.create({
+      id: newUser.id,
+      email: newUser.email,
+      role: newUser.role as UserRole,
+      enrollmentCount: newUser._count.enrollments,
+    });
+
+    return userEntity.toJSON() as UserResponseDto;
   }
 } 

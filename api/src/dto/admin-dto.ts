@@ -63,4 +63,14 @@ export interface ChangeUserRoleDto {
   userId: number;
   newRole: UserRole;
   reason?: string; // Optional reason for audit log
+}
+
+/**
+ * DTO for admin creating a new user
+ * Used in POST /admin/users endpoint
+ */
+export interface CreateUserByAdminDto {
+  email: string;
+  password: string;
+  role: UserRole;
 } 

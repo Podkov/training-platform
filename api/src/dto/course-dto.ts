@@ -51,6 +51,7 @@ export interface CourseQueryDto {
   status?: CourseStatus;
   page?: number;
   limit?: number;
+  enrolledForUserId?: number;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { 
   CreateCourseDto, 
   UpdateCourseDto, 
@@ -25,22 +25,40 @@ export class CourseRepository {
   /**
    * Find all courses with optional filtering and pagination
    */
-  async findAll(query: CourseQueryDto = {}): Promise<CourseResponseDto[]> {
-    const { status, page = 1, limit = 10 } = query;
+  async findAll(query: CourseQueryDto = {}): Promise<{ courses: CourseResponseDto[], total: number }> {
+    const { status, page = 1, limit = 10, enrolledForUserId } = query;
     
-    const courses = await this.prisma.course.findMany({
-      where: status ? { status } : undefined,
-      include: {
-        _count: {
-          select: { enrollments: { where: { status: 'active' } } }
-        }
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: { id: 'desc' }
-    });
+    const whereClause: Prisma.CourseWhereInput = {};
 
-    return courses.map(course => {
+    if (status) {
+      whereClause.status = status;
+    }
+
+    if (enrolledForUserId) {
+      whereClause.enrollments = {
+        some: {
+          userId: enrolledForUserId,
+          status: 'active' 
+        }
+      };
+    }
+
+    const [coursesData, total] = await this.prisma.$transaction([
+      this.prisma.course.findMany({
+        where: whereClause,
+        include: {
+          _count: {
+            select: { enrollments: { where: { status: 'active' } } }
+          }
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { id: 'desc' }
+      }),
+      this.prisma.course.count({ where: whereClause })
+    ]);
+
+    const courses = coursesData.map(course => {
       const courseEntity = CourseEntity.create({
         id: course.id,
         title: course.title,
@@ -51,6 +69,8 @@ export class CourseRepository {
       
       return courseEntity.toJSON() as CourseResponseDto;
     });
+
+    return { courses, total };
   }
 
   /**

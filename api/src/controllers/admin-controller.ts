@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { UserService } from '../services/user-service';
 import { CourseService } from '../services/course-service';
 import { EnrollmentService } from '../services/enrollment-service';
-import { ChangeUserRoleDto } from '../dto/admin-dto';
+import { ChangeUserRoleDto, CreateUserByAdminDto } from '../dto/admin-dto';
+import { UserResponseDto } from '../dto/user-dto';
 import { JwtPayload } from '../utils/jwt.utils';
 import { formatErrorResponse, getHttpStatusCode } from '../exceptions';
 
@@ -50,6 +51,7 @@ export class AdminController {
       
       res.json(user);
     } catch (error) {
+      console.error('[ADMIN ERROR] Change User Role Failed:', error);
       const statusCode = getHttpStatusCode(error);
       const errorResponse = formatErrorResponse(error);
       res.status(statusCode).json(errorResponse);
@@ -162,6 +164,26 @@ export class AdminController {
       await courseService.deleteCourse({ id: courseId, force: true }, currentUser);
       res.status(204).send();
     } catch (error) {
+      const statusCode = getHttpStatusCode(error);
+      const errorResponse = formatErrorResponse(error);
+      res.status(statusCode).json(errorResponse);
+    }
+  }
+
+  /**
+   * POST /admin/users - Create a new user by an administrator
+   */
+  static async createUser(req: Request, res: Response): Promise<void> {
+    try {
+      const currentUser = req.user as JwtPayload;
+      const { email, password, role } = req.body;
+
+      const dto: CreateUserByAdminDto = { email, password, role };
+      const newUser: UserResponseDto = await userService.createUserByAdmin(dto, currentUser);
+      
+      res.status(201).json(newUser);
+    } catch (error) {
+      console.error('[ADMIN ERROR] Create User Failed:', error);
       const statusCode = getHttpStatusCode(error);
       const errorResponse = formatErrorResponse(error);
       res.status(statusCode).json(errorResponse);

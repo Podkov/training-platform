@@ -26,6 +26,10 @@ export class CourseController {
         limit: req.query.limit ? parseInt(req.query.limit as string) : 10
       };
 
+      if (req.query.myCourses === 'true' && currentUser) {
+        query.enrolledForUserId = currentUser.userId;
+      }
+
       const courses = await courseService.getAllCourses(query, currentUser);
       res.json(courses);
     } catch (error) {

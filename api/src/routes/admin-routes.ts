@@ -13,6 +13,12 @@ router.get('/users',
   AdminController.getAllUsers
 );
 
+// POST /admin/users - Create a new user by admin
+router.post('/users',
+  ...adminOnly,
+  AdminController.createUser
+);
+
 // PUT /admin/users/:id/role - Change user role
 router.put('/users/:id/role', 
   ...adminOnly, 

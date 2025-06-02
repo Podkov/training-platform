@@ -74,7 +74,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               </div>
               
               <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
-                <span>© 2024 TrainingHub</span>
+                <span>© 2025 TrainingHub</span>
                 <span>•</span>
                 <span>Wersja 1.0</span>
               </div>

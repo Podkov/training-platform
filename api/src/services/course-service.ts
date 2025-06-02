@@ -40,10 +40,16 @@ export class CourseService {
     return this.courseRepository.create(dto);
   }
 
-  async getAllCourses(query: CourseQueryDto, currentUser: JwtPayload): Promise<CourseResponseDto[]> {
-    // All authenticated users can view courses
-    // Specific filtering for roles can be added here if needed
-    return this.courseRepository.findAll(query);
+  async getAllCourses(query: CourseQueryDto, currentUser: JwtPayload): Promise<{ courses: CourseResponseDto[], total: number, page: number, limit: number }> {
+    const { page = 1, limit = 10 } = query;
+    // Przekazujemy całe query, aby repozytorium mogło obsłużyć np. status
+    const result = await this.courseRepository.findAll(query);
+    return {
+      courses: result.courses,
+      total: result.total,
+      page,
+      limit
+    };
   }
 
   async getCourseById(id: number, currentUser: JwtPayload): Promise<CourseResponseDto> {
@@ -124,7 +130,7 @@ export class CourseService {
     };
   }
 
-  async getCourseStats(currentUser: JwtPayload): Promise<{ total: number, active: number, finished: number }> {
+  async getCourseStats(currentUser: JwtPayload): Promise<{ totalCourses: number, coursesByStatus: Record<string, number> }> {
     const user = await this.userRepository.findById(currentUser.userId);
     if (!user || user.role !== UserRole.Admin) {
       throw ForbiddenException.courseManagement('view course stats', 0);
@@ -136,6 +142,12 @@ export class CourseService {
       this.courseRepository.countByStatus('finished')
     ]);
 
-    return { total, active, finished };
+    return {
+      totalCourses: total,
+      coursesByStatus: {
+        active: active,
+        finished: finished
+      }
+    };
   }
 } 

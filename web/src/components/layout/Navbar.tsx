@@ -8,13 +8,18 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const isAdmin = user?.role === 'ADMIN';
 
-  const navigation = [
+  const baseNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: '🏠' },
     { name: 'Kursy', href: '/courses', icon: '📚' },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const navigation = isAdmin 
+    ? [...baseNavigation, { name: 'Panel Admina', href: '/admin', icon: '⚙️' }] 
+    : baseNavigation;
+
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   const handleLogout = () => {
     logout();

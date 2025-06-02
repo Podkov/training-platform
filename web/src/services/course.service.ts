@@ -58,6 +58,14 @@ export interface CourseQuery {
   status?: CourseStatus;
   page?: number;
   limit?: number;
+  myCourses?: string | boolean;
+}
+
+export interface CourseListResponseDto {
+  courses: Course[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface UserCoursesResponse {
@@ -83,8 +91,14 @@ export const updateCourseSchema = createCourseSchema.partial();
 // Serwis kursów - wykorzystuje istniejący api.ts
 export const courseService = {
   // CRUD dla kursów
-  async getAll(query?: CourseQuery): Promise<Course[]> {
-    const response = await api.get('/courses', { params: query });
+  async getAll(query?: CourseQuery): Promise<CourseListResponseDto> {
+    const params: Record<string, any> = { ...query };
+    if (params.myCourses === true) {
+      params.myCourses = 'true';
+    } else if (params.myCourses === false || params.myCourses === undefined) {
+      delete params.myCourses;
+    }
+    const response = await api.get('/courses', { params });
     return response.data;
   },
 

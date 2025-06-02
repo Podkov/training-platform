@@ -157,7 +157,7 @@ export class EnrollmentService {
     };
   }
 
-  async getEnrollmentStats(currentUser: JwtPayload): Promise<{ total: number, active: number, cancelled: number }> {
+  async getEnrollmentStats(currentUser: JwtPayload): Promise<{ totalEnrollments: number, enrollmentsByStatus: Record<string, number> }> {
     const user = await this.userRepository.findById(currentUser.userId);
     if (!user || user.role !== UserRole.Admin) {
       throw ForbiddenException.insufficientRole([UserRole.Admin], user?.role || UserRole.Participant, 'view enrollment stats');
@@ -169,7 +169,13 @@ export class EnrollmentService {
       this.enrollmentRepository.countByStatus('cancelled')
     ]);
 
-    return { total, active, cancelled };
+    return {
+      totalEnrollments: total,
+      enrollmentsByStatus: {
+        active: active,
+        cancelled: cancelled
+      }
+    };
   }
 
   async cancelEnrollmentForUser(courseId: number, targetUserId: number, currentUser: JwtPayload): Promise<EnrollmentResponseDto> {

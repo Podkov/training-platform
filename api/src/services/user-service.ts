@@ -8,7 +8,7 @@ import {
   DeleteUserResponseDto,
   ChangePasswordDto
 } from '../dto/user-dto';
-import { ChangeUserRoleDto, AdminUserListDto } from '../dto/admin-dto';
+import { ChangeUserRoleDto, AdminUserListDto, CreateUserByAdminDto } from '../dto/admin-dto';
 import { UserRole } from '../entities/status-enums';
 import { JwtPayload } from '../utils/jwt.utils';
 import { ForbiddenException, NotFoundException, BadRequestException } from '../exceptions';
@@ -221,15 +221,18 @@ export class UserService {
       throw ForbiddenException.adminOnly('view user statistics');
     }
 
-    // This would need additional repository methods
-    // For now, return basic structure
+    const totalUsers = await this.userRepository.countAll();
+    const adminUsers = await this.userRepository.countByRole(UserRole.Admin);
+    const trainerUsers = await this.userRepository.countByRole(UserRole.Trainer);
+    const participantUsers = await this.userRepository.countByRole(UserRole.Participant);
+
     return {
-      totalUsers: 0, // Would call userRepository.count()
+      totalUsers,
       usersByRole: {
-        [UserRole.Admin]: 0,
-        [UserRole.Trainer]: 0,
-        [UserRole.Participant]: 0
-      }
+        [UserRole.Admin]: adminUsers,
+        [UserRole.Trainer]: trainerUsers,
+        [UserRole.Participant]: participantUsers,
+      },
     };
   }
 
@@ -287,5 +290,35 @@ export class UserService {
       throw NotFoundException.user(userId);
     }
     return result;
+  }
+
+  /**
+   * Create a new user by an administrator.
+   */
+  async createUserByAdmin(dto: CreateUserByAdminDto, currentUser: JwtPayload): Promise<UserResponseDto> {
+    const requestingUser = await this.userRepository.findById(currentUser.userId);
+    if (!requestingUser) {
+      throw NotFoundException.user(currentUser.userId);
+    }
+
+    const requestingUserEntity = UserEntity.create(requestingUser);
+    if (!requestingUserEntity.isAdmin()) {
+      throw ForbiddenException.adminOnly('create users');
+    }
+
+    // Basic validation (more can be added with Zod or similar)
+    if (!dto.email || !dto.password || !dto.role) {
+      throw new BadRequestException('Pola email, password i role są wymagane.', 'MISSING_FIELDS');
+    }
+    if (dto.password.length < 6) {
+      throw BadRequestException.validation('password', dto.password, 'Hasło musi mieć co najmniej 6 znaków.');
+    }
+    if (!Object.values(UserRole).includes(dto.role)) {
+      throw BadRequestException.validation('role', dto.role, 'Nieprawidłowa rola użytkownika.');
+    }
+
+    // Service layer calls repository
+    const newUser = await this.userRepository.createByAdmin(dto);
+    return newUser;
   }
 } 

@@ -14,6 +14,9 @@ model User {
   passwordHash String @map("password_hash")
   role         String // "ADMIN" | "TRAINER" | "PARTICIPANT"
   enrollments  Enrollment[]
+  systemEvents SystemEvent[] @relation("UserEvents")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
 model Enrollment {
@@ -25,6 +28,7 @@ model Enrollment {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
   course    Course   @relation(fields: [courseId], references: [id])
+  systemEvents SystemEvent[] @relation("EnrollmentEvents")
 }
 
 model Course {
@@ -33,4 +37,25 @@ model Course {
   description String
   status      String       @default("active")
   enrollments Enrollment[]
+  systemEvents SystemEvent[] @relation("CourseEvents")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+}
+
+model SystemEvent {
+  id                  Int      @id @default(autoincrement())
+  eventType           String   @map("event_type") // np. USER_CREATED, COURSE_CREATED, USER_ENROLLED
+  message             String
+  relatedUserId       Int?     @map("related_user_id")
+  relatedCourseId     Int?     @map("related_course_id")
+  relatedEnrollmentId Int?     @map("related_enrollment_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  User          User?    @relation("UserEvents", fields: [relatedUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Course        Course?  @relation("CourseEvents", fields: [relatedCourseId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Enrollment    Enrollment? @relation("EnrollmentEvents", fields: [relatedEnrollmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([relatedUserId])
+  @@index([relatedCourseId])
+  @@index([relatedEnrollmentId])
 } 
