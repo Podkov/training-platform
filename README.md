@@ -1,154 +1,77 @@
-# Training Platform Monorepo
+# Training Platform
 
-## Opis projektu
-Training Platform to monorepo zawierające aplikację webową (frontend) i API (backend) do zarządzania platformą szkoleniową. System umożliwia zarządzanie kursami, zapisami uczestników oraz role-based access control z nowoczesnym interfejsem użytkownika.
+## 📋 Opis projektu
+Training Platform to nowoczesna platforma szkoleniowa umożliwiająca zarządzanie kursami, zapisami uczestników oraz kontrolę dostępu opartą na rolach. System został zaprojektowany z myślą o skalowalności, bezpieczeństwie i wygodzie użytkowania.
 
-### ✨ Stan aktualny (v1.0)
-- **🎨 Nowoczesny UI/UX**: Complete design system z TrainingHub branding
-- **🧭 Smart Navigation**: Top navbar, breadcrumbs, responsive mobile menu
-- **📚 Full Course Management**: CRUD operations, enrollment system, participant tracking
-- **🔐 Role-Based Security**: ADMIN/TRAINER/PARTICIPANT z granular permissions  
-- **📱 Mobile-First Design**: Responsive layout dla wszystkich urządzeń
-- **⚡ Real-Time Updates**: Live enrollment status, dynamic content
-- **🛡️ Type-Safe Architecture**: Full TypeScript implementation z proper validation
-
-Aplikacja jest gotowa do użycia i zawiera wszystkie podstawowe funkcjonalności platformy edukacyjnej.
-
-## Struktura projektu
+## 🏗 Struktura projektu
 ```
 training-platform/
 ├── api/                # Backend (Express.js + TypeScript)
 │   ├── prisma/         # Schemat bazy danych i migracje
 │   ├── src/            # Kod źródłowy
-│   │   ├── dto/            # obiekty DTO (course-dto.ts, enrollment-dto.ts)
-│   │   ├── entities/       # encje domenowe (course-entity.ts, enrollment-entity.ts)
-│   │   ├── exceptions/     # wyjątki HTTP (bad-request-exception.ts, ...)
-│   │   ├── repositories/    # dostęp do bazy (course-repository.ts, ...)
-│   │   ├── services/       # logika biznesowa (course-service.ts, ...)
-│   │   ├── controllers/    # mapowanie HTTP → serwisy
-│   │   ├── routes/         # definicje Express.Router
-│   │   ├── middlewares/    # middleware (auth, walidatory)
-│   │   ├── utils/          # narzędzia (logger, jwt.utils)
-│   │   ├── index.ts        # konfiguracja aplikacji
-│   │   └── server.ts       # uruchomienie serwera
-│   └── Dockerfile     # Konfiguracja kontenera API
+│   │   ├── dto/            # Data Transfer Objects
+│   │   ├── entities/       # Encje domenowe
+│   │   ├── exceptions/     # Wyjątki HTTP
+│   │   ├── repositories/   # Warstwa dostępu do danych
+│   │   ├── services/       # Logika biznesowa
+│   │   ├── controllers/    # Kontrolery HTTP
+│   │   ├── routes/         # Definicje endpointów
+│   │   ├── middlewares/    # Middleware (auth, walidacja)
+│   │   ├── utils/          # Narzędzia pomocnicze
+│   │   └── index.ts        # Konfiguracja aplikacji
+│   └── Dockerfile      # Konfiguracja kontenera API
 ├── web/               # Frontend (React + TypeScript)
 │   ├── src/           # Kod źródłowy
-│   │   ├── components/    # komponenty React
-│   │   │   ├── auth/           # komponenty autoryzacji (LoginForm, RegisterForm)
-│   │   │   ├── courses/        # komponenty kursów (CourseCard, CourseModal, CourseList)
-│   │   │   ├── layout/         # komponenty layoutu (Navbar, Breadcrumbs, AppLayout, ProtectedLayout)
-│   │   │   └── common/         # wspólne komponenty (Button)
-│   │   ├── contexts/      # konteksty React (AuthContext)
-│   │   ├── hooks/         # hooki React (useAuth)
-│   │   ├── services/      # serwisy API (auth.service, course.service)
-│   │   ├── pages/         # strony aplikacji
-│   │   │   ├── auth/           # strony autoryzacji (LoginPage, RegisterPage)
-│   │   │   ├── dashboard/      # dashboard główny
-│   │   │   ├── courses/        # strony kursów (CourseListPage, CourseDetailsPage)
-│   │   │   └── profile/        # profil użytkownika
-│   │   └── routes.tsx     # konfiguracja React Router
+│   │   ├── components/    # Komponenty React
+│   │   ├── contexts/      # Konteksty React
+│   │   ├── hooks/         # Hooki React
+│   │   ├── services/      # Serwisy API
+│   │   ├── pages/         # Strony aplikacji
+│   │   ├── utils/         # Narzędzia pomocnicze
+│   │   └── routes.tsx     # Konfiguracja routingu
 │   └── Dockerfile     # Konfiguracja kontenera web
 ├── data/              # Dane (baza SQLite)
 │   └── dev.db        # Plik bazy danych SQLite
 └── docker-compose.yml # Orchestracja kontenerów
 ```
 
-## Technologie
-- **Backend:**
-  - Bun 1.0.25 (runtime i package manager)
-  - TypeScript (strong typing)
-  - Express 5 (web framework)
-  - Prisma ORM (database ORM)
-  - SQLite (baza danych)
-  - JWT dla autoryzacji
-  - Zod dla walidacji
-  - Bcrypt dla hashowania haseł
-- **Frontend:**
-  - React 18 (UI framework)
-  - TypeScript (strong typing)
-  - Vite (build tool)
-  - Tailwind CSS (utility-first CSS framework)
-  - React Router v6 (routing)
-  - React Hook Form (forms management)
-  - Zod dla walidacji formularzy
-  - Axios (HTTP client)
-- **DevTools:**
-  - ESLint + Prettier (code formatting)
-  - TypeScript strict mode
-  - Git hooks (husky)
-- **Infrastruktura:**
-  - Docker & Docker Compose
-  - Nginx (reverse proxy)
+## 🛠 Stack technologiczny
 
-## Funkcjonalności
+### Backend
+- **Bun 1.0.25** - Szybki runtime JavaScript/TypeScript z wbudowanym package managerem
+- **TypeScript** - Typowanie statyczne dla lepszej jakości kodu
+- **Express 5** - Lekki i elastyczny framework webowy
+- **Prisma ORM** - Nowoczesny ORM z type-safety i migracjami
+- **SQLite** - Lekka baza danych idealna dla MVP
+- **JWT** - Bezpieczna autoryzacja oparta na tokenach
+- **Zod** - Walidacja danych z type inference
+- **Bcrypt** - Bezpieczne hashowanie haseł
 
-### 🧭 Navigation & Layout
-- **Top Navigation Bar**: Logo TrainingHub, główne menu, user dropdown
-- **Breadcrumbs**: Automatyczna nawigacja ścieżkowa (Home > Kursy > Szczegóły)
-- **User Menu**: Avatar, profil, wylogowanie z dropdown
+### Frontend
+- **React 18** - Biblioteka UI z nowymi funkcjami jak Suspense
+- **TypeScript** - Typowanie statyczne dla komponentów
+- **Vite** - Szybki bundler z HMR
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Router v6** - Routing z nowymi funkcjami
+- **React Hook Form** - Zarządzanie formularzami
+- **Zod** - Walidacja formularzy
+- **Axios** - HTTP client z interceptors
 
-### 🔐 Autoryzacja & Bezpieczeństwo
-- **Role-Based Access Control**: ADMIN, TRAINER, PARTICIPANT
-- **JWT Authentication**: Secure token-based auth
-- **Protected Routes**: Automatyczne przekierowania i kontrola dostępu
-- **Session Management**: Auto-logout, token refresh
-- **Form Validation**: Real-time validation z Zod schemas
+### DevTools
+- **ESLint + Prettier** - Formatowanie i linting kodu
+- **TypeScript strict mode** - Maksymalne bezpieczeństwo typów
+- **Git hooks (husky)** - Automatyzacja przed commit
 
-### 📚 Zarządzanie Kursami
-- **Course CRUD**: Pełne zarządzanie kursami (tworzenie, edycja, usuwanie)
-- **Course Details**: Szczegółowe widoki z opisem, statusem, uczestnikami
-- **Enrollment System**: Zapisy/wypisy uczestników z real-time updates
-- **Filtering & Search**: Filtrowanie kursów według statusu
-- **Participant Management**: Lista uczestników dla admin/trainer
+### Infrastruktura
+- **Docker & Docker Compose** - Konteneryzacja i orchestracja
+- **Nginx** - Reverse proxy i serwowanie statycznych plików
 
-### 👥 User Management
-- **User Profiles**: Zarządzanie profilem użytkownika
-- **Dashboard**: Personalized welcome screen z quick actions
-- **Activity Tracking**: Historia zapisów na kursy
-- **Role Display**: Czytelne wyświetlanie ról i uprawnień
+## 🚀 Uruchomienie
 
-## Wymagania
-- **Development:**
-  - Node.js 18+ lub Bun 1.0.25+
-  - Git
-- **Production:**
-  - Docker
-  - Docker Compose
-
-## Konfiguracja
-
-### 1. Environment Variables
-Utwórz plik `.env` w katalogu `api/`:
-```env
-DATABASE_URL="file:../../data/dev.db"
-JWT_SECRET="twoj-tajny-klucz-min-32-znaki-dla-bezpieczenstwa"
-NODE_ENV="development"
-PORT=4000
-CORS_ORIGIN="http://localhost,http://localhost:3000"
-```
-
-### 2. Database Setup
-```bash
-# W katalogu głównym projektu
-cd api
-bunx prisma migrate dev --name init
-bunx prisma generate
-```
-
-### 3. Seed Data (opcjonalnie)
-```bash
-cd api
-bunx prisma db seed
-```
-
-## Uruchomienie
-
-### 1. Development Mode (Recommended)
+### Development Mode
 
 #### Backend (API)
 ```bash
-# W katalogu api/
 cd api
 bun install
 bun run dev
@@ -157,14 +80,13 @@ bun run dev
 
 #### Frontend (Web)
 ```bash
-# W katalogu web/
 cd web
 bun install
 bun run dev
 # App dostępna na: http://localhost:3000
 ```
 
-### 2. Production Mode (Docker)
+### Production Mode
 
 #### Przygotowanie
 1. Upewnij się, że masz zainstalowane:
@@ -179,11 +101,14 @@ cd training-platform
 ```
 
 3. Skonfiguruj zmienne środowiskowe:
-```bash
-# Skopiuj przykładowy plik .env
-cp api/.env.example api/.env
-# Edytuj plik .env i ustaw odpowiednie wartości
-```
+
+Przykładowa zawartość pliku .env
+# Ścieżka do bazy danych SQLite
+DATABASE_URL="file:../../data/dev.db"
+
+# Klucz do podpisywania JWT (wygeneruj nowy!)
+JWT_SECRET="twoj-tajny-klucz-min-32-znaki-32"
+
 
 #### Uruchomienie
 ```bash
@@ -198,7 +123,6 @@ docker-compose up -d --build
 - Frontend: http://localhost
 - Backend API: http://localhost:4000
 - Health Check: http://localhost:4000/health
-
 #### Przydatne komendy Docker
 ```bash
 # Zatrzymanie kontenerów
@@ -207,18 +131,6 @@ docker-compose down
 # Przeglądanie logów
 docker-compose logs -f api    # logi API
 docker-compose logs -f web    # logi frontendu
-
-# Restart pojedynczego serwisu
-docker-compose restart api
-docker-compose restart web
-
-# Sprawdzenie statusu kontenerów
-docker-compose ps
-```
-
-### 3. Troubleshooting
-
-#### Częste problemy i rozwiązania
 
 1. **Problem z CORS**
    - Sprawdź czy w pliku `api/.env` masz poprawnie ustawioną zmienną `CORS_ORIGIN`
@@ -239,6 +151,32 @@ docker-compose ps
    - Usuń wszystkie kontenery: `docker-compose down -v`
    - Sprawdź logi: `docker-compose logs -f`
 
+## ✨ Główne funkcjonalności
+
+### 🧭 Navigation & Layout
+- Top Navigation Bar z logo i menu
+- Breadcrumbs dla nawigacji
+- Responsywny design dla mobile
+- Dark mode support
+
+### 🔐 Autoryzacja & Bezpieczeństwo
+- Role-Based Access Control (ADMIN/TRAINER/PARTICIPANT)
+- JWT Authentication
+- Protected Routes
+- Form Validation
+
+### 📚 Zarządzanie Kursami
+- CRUD dla kursów
+- System zapisów
+- Filtrowanie i wyszukiwanie
+- Zarządzanie uczestnikami
+
+### 👥 User Management
+- Profile użytkowników
+- Dashboard
+- Historia aktywności
+- Zarządzanie rolami
+
 ## API Documentation
 
 ### Autoryzacja
@@ -249,11 +187,27 @@ docker-compose ps
   - Body: `{ "email": string, "password": string }`
   - Response: `{ "token": string }`
 
+### Użytkownicy
+- `GET /users/me` - mój profil
+  - Response: `UserResponseDto`
+- `GET /users/:id` - profil użytkownika (ADMIN/TRAINER lub własny)
+  - Response: `UserResponseDto`
+- `PUT /users/:id` - aktualizacja profilu (ADMIN lub własny)
+  - Body: `UpdateUserDto`
+  - Response: `UserResponseDto`
+- `PUT /users/me/password` - zmiana hasła
+  - Body: `{ "currentPassword": string, "newPassword": string }`
+  - Response: `204 No Content`
+- `DELETE /users/:id` - usunięcie konta (ADMIN lub własne)
+  - Response: `204 No Content`
+- `GET /users/:id/can-delete` - sprawdzenie czy użytkownik może być usunięty (ADMIN)
+  - Response: `{ "canDelete": boolean, "reason"?: string }`
+
 ### Kursy
 - `GET /courses` - lista kursów z filtrowaniem
-  - Query: `?status=active|finished&page=1&limit=10`
+  - Query: `?status=active|finished&page=1&limit=10&myCourses=true`
   - Response: `Course[]`
-- `GET /courses/:id` - szczegóły kursu z liczbą uczestników
+- `GET /courses/:id` - szczegóły kursu
   - Response: `CourseResponseDto`
 - `POST /courses` - utworzenie kursu (ADMIN/TRAINER)
   - Body: `CreateCourseDto`
@@ -261,8 +215,7 @@ docker-compose ps
 - `PUT /courses/:id` - aktualizacja kursu (ADMIN/TRAINER)
   - Body: `UpdateCourseDto`
   - Response: `CourseResponseDto`
-- `DELETE /courses/:id?force=true` - usunięcie kursu (ADMIN/TRAINER)
-  - Query: `force=true` - force delete z aktywnymi zapisami
+- `DELETE /courses/:id` - usunięcie kursu (ADMIN/TRAINER)
   - Response: `204 No Content`
 
 ### Zapisy na kursy (Enrollments)
@@ -270,22 +223,27 @@ docker-compose ps
   - Response: `EnrollmentResponseDto`
 - `DELETE /enrollments/courses/:id/enroll` - anulowanie zapisu (PARTICIPANT)
   - Response: `204 No Content`
-- `GET /enrollments/users/me/courses` - lista moich kursów
-  - Response: `UserCoursesResponseDto`
-- `GET /enrollments/courses/:courseId` - uczestnicy kursu (ADMIN/TRAINER)
-  - Response: `EnrollmentResponseDto[]`
 - `GET /enrollments` - wszystkie zapisy (ADMIN/TRAINER)
+  - Response: `EnrollmentResponseDto[]`
+- `GET /enrollments/courses/:courseId` - uczestnicy kursu (ADMIN/TRAINER)
   - Response: `EnrollmentResponseDto[]`
 
 ### Panel administratora
 - `GET /admin/users` - lista użytkowników (ADMIN)
+  - Query: `?page=1&limit=10`
+  - Response: `UserResponseDto[]`
+- `POST /admin/users` - utworzenie użytkownika (ADMIN)
+  - Body: `CreateUserDto`
+  - Response: `UserResponseDto`
 - `PUT /admin/users/:id/role` - zmiana roli użytkownika (ADMIN)
+  - Body: `{ "role": "ADMIN" | "TRAINER" | "PARTICIPANT" }`
+  - Response: `UserResponseDto`
 - `GET /admin/stats` - statystyki platformy (ADMIN)
-
-### Profil użytkownika
-- `GET /users/me` - mój profil
-- `PUT /users/me` - aktualizacja profilu
-- `PUT /users/me/password` - zmiana hasła
+  - Response: `AdminStatsDto`
+- `POST /admin/users/:id/force-delete` - wymuszenie usunięcia użytkownika (ADMIN)
+  - Response: `204 No Content`
+- `POST /admin/courses/:id/force-delete` - wymuszenie usunięcia kursu (ADMIN)
+  - Response: `204 No Content`
 
 ### Health Check
 - `GET /health` - sprawdzenie stanu API
@@ -296,345 +254,209 @@ docker-compose ps
 ### Modele
 ```prisma
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  passwordHash String        @map("password_hash")
-  role         UserRole      @default(PARTICIPANT)
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String @map("password_hash")
+  role         String // "ADMIN" | "TRAINER" | "PARTICIPANT"
   enrollments  Enrollment[]
+  systemEvents SystemEvent[] @relation("UserEvents")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
 model Course {
-  id          Int             @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
   description String
-  status      CourseStatus    @default(active)
+  status      String       @default("active")
   enrollments Enrollment[]
+  systemEvents SystemEvent[] @relation("CourseEvents")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
 }
 
 model Enrollment {
-  id        Int              @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   courseId  Int
-  status    EnrollmentStatus @default(active)
-  user      User             @relation(fields: [userId], references: [id])
-  course    Course           @relation(fields: [courseId], references: [id])
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  systemEvents SystemEvent[] @relation("EnrollmentEvents")
+}
+
+model SystemEvent {
+  id                  Int      @id @default(autoincrement())
+  eventType           String   @map("event_type") // np. USER_CREATED, COURSE_CREATED, USER_ENROLLED
+  message             String
+  relatedUserId       Int?     @map("related_user_id")
+  relatedCourseId     Int?     @map("related_course_id")
+  relatedEnrollmentId Int?     @map("related_enrollment_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  User          User?    @relation("UserEvents", fields: [relatedUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Course        Course?  @relation("CourseEvents", fields: [relatedCourseId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Enrollment    Enrollment? @relation("EnrollmentEvents", fields: [relatedEnrollmentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([relatedUserId])
+  @@index([relatedCourseId])
+  @@index([relatedEnrollmentId])
 }
 ```
 
-### Enumy
-```prisma
-enum UserRole {
-  ADMIN
-  TRAINER  
-  PARTICIPANT
-}
+### Relacje i indeksy
 
-enum CourseStatus {
-  active
-  finished
-}
+#### User
+- Jeden do wielu z Enrollment (jeden użytkownik może mieć wiele zapisów)
+- Jeden do wielu z SystemEvent (jeden użytkownik może mieć wiele zdarzeń)
+- Unikalny indeks na email
+- Timestamps (createdAt, updatedAt)
 
-enum EnrollmentStatus {
-  active
-  cancelled
-}
-```
+#### Course
+- Jeden do wielu z Enrollment (jeden kurs może mieć wiele zapisów)
+- Jeden do wielu z SystemEvent (jeden kurs może mieć wiele zdarzeń)
+- Timestamps (createdAt, updatedAt)
+
+#### Enrollment
+- Relacja wiele do jednego z User (jeden użytkownik może mieć wiele zapisów)
+- Relacja wiele do jednego z Course (jeden kurs może mieć wiele zapisów)
+- Jeden do wielu z SystemEvent (jeden zapis może mieć wiele zdarzeń)
+- Timestamps (createdAt, updatedAt)
+
+#### SystemEvent
+- Relacja wiele do jednego z User (opcjonalna)
+- Relacja wiele do jednego z Course (opcjonalna)
+- Relacja wiele do jednego z Enrollment (opcjonalna)
+- Indeksy na polach relacji dla optymalizacji zapytań
+- Timestamps (createdAt)
+
+### Uwaga dotycząca SystemEvent
+Model `SystemEvent` został dodany do schematu bazy danych, ale obecnie nie jest wykorzystywany w aplikacji. Plan zakładał implementację systemu logowania zdarzeń (audit log) dla:
+- Tworzenia i modyfikacji użytkowników
+- Tworzenia i modyfikacji kursów
+- Zapisywania i anulowania zapisów na kursy
+
+System miał służyć do śledzenia historii zmian i aktywności w aplikacji, co mogłoby być przydatne w przyszłości do:
+- Debugowania problemów
+- Analizy aktywności użytkowników
+- Generowania raportów
+- Zapewnienia transparentności działań administratorów
 
 ## Frontend Architecture
 
-### Layout System
-- **AppLayout**: Base layout z navbar, breadcrumbs, footer
-- **ProtectedLayout**: Layout z autoryzacją i role checking
-- **Navbar**: Top navigation z logo, menu, user dropdown
-- **Breadcrumbs**: Auto-generated navigation path
-
-### Component Structure
+### Struktura projektu
 ```
-components/
-├── layout/
-│   ├── Navbar.tsx          # Top navigation bar
-│   ├── Breadcrumbs.tsx     # Navigation breadcrumbs
-│   ├── AppLayout.tsx       # Base app layout
-│   └── ProtectedLayout.tsx # Auth-protected layout
-├── common/
-│   └── Button/             # Reusable button component
-├── auth/
-│   ├── LoginForm.tsx       # Login form with validation
-│   └── RegisterForm.tsx    # Registration form
-└── courses/
-    ├── CourseCard.tsx      # Course display card
-    ├── CourseModal.tsx     # Course create/edit modal
-    └── CourseList.tsx      # Course listing component
+web/src/
+├── assets/           # Statyczne zasoby (obrazy, ikony)
+├── components/       # Komponenty React
+│   ├── admin/       # Komponenty panelu admina
+│   ├── auth/        # Komponenty autoryzacji
+│   ├── common/      # Wspólne komponenty UI
+│   ├── courses/     # Komponenty kursów
+│   └── layout/      # Komponenty układu strony
+├── contexts/        # Konteksty React (AuthContext)
+├── hooks/           # Custom hooks
+├── pages/           # Strony aplikacji
+├── services/        # Serwisy API
+├── styles/          # Style CSS/SCSS
+├── utils/           # Narzędzia pomocnicze
+├── App.tsx          # Główny komponent aplikacji
+├── main.tsx         # Punkt wejścia
+└── routes.tsx       # Konfiguracja routingu
 ```
 
-### Pages Structure
-```
-pages/
-├── auth/
-│   ├── LoginPage.tsx       # Login page
-│   └── RegisterPage.tsx    # Registration page
-├── dashboard/
-│   └── DashboardPage.tsx   # Main dashboard
-├── courses/
-│   ├── CourseListPage.tsx  # Course listing with filters
-│   └── CourseDetailsPage.tsx # Course details with enrollment
-└── profile/
-    └── ProfilePage.tsx     # User profile management
-```
+### Architektura komponentów
+
+#### Layout System
+- **AppLayout**: Główny układ aplikacji
+  - Navbar z nawigacją
+  - Breadcrumbs dla ścieżki
+  - Container dla treści
+  - Footer z informacjami
+
+#### Komponenty
+- **Auth**
+  - LoginForm - formularz logowania
+  - RegisterForm - formularz rejestracji
+  - ProtectedRoute - ochrona routingu
+
+- **Courses**
+  - CourseCard - karta kursu
+  - CourseList - lista kursów
+  - CourseModal - modal tworzenia/edycji
+  - CourseDetails - szczegóły kursu
+
+- **Admin**
+  - UserList - lista użytkowników
+  - UserModal - zarządzanie użytkownikami
+  - StatsPanel - panel statystyk
+
+- **Common**
+  - Button - przycisk z wariantami
+  - Input - pole formularza
+  - Modal - modal z backdrop
+  - Table - tabela danych
 
 ### State Management
-- **AuthContext**: Global authentication state
-- **Local State**: Component-level state z useState/useEffect
-- **API Integration**: Axios z interceptors dla token management
+- **AuthContext**: Globalny stan autoryzacji
+  - Token JWT
+  - Dane użytkownika
+  - Role i uprawnienia
 
-## Recent Updates & Features
+- **Local State**: Stan komponentów
+  - useState dla prostego stanu
+  - useReducer dla złożonej logiki
+  - Custom hooks dla logiki biznesowej
 
-### 🚀 Latest Implementation (Current Release)
-- **CourseDetailsPage**: Kompletna strona szczegółów kursu z:
-  - Wyświetlaniem pełnych informacji o kursie (tytuł, opis, status, liczba uczestników)
-  - Real-time enrollment system dla uczestników (zapisy/wypisy)
-  - Lista uczestników dla administratorów i trenerów z danymi użytkowników
-  - Inline editing via CourseModal integration
-  - Force delete functionality dla administratorów
-  - Dynamic breadcrumbs z tytułem kursu
-  - Role-based action buttons dostosowane do uprawnień użytkownika
+### Routing
+- **Protected Routes**: Ochrona ścieżek
+  - Sprawdzanie autoryzacji
+  - Przekierowania
+  - Role-based access
 
-### 🎨 Modern UI/UX Implementation
-- **Complete Design System**: Implemented consistent visual language
-- **Navigation Overhaul**: Added top navbar, breadcrumbs, user menu
-- **TrainingHub Branding**: Professional logo z emoji 🎓 i consistent styling
-- **Responsive Layout**: Mobile-first design z hamburger menu
-- **Dark Mode**: Full dark mode support across all components
-- **Loading States**: Elegant loading animations i error handling
-- **Empty States**: Meaningful placeholders z actionable suggestions
+- **Route Structure**
+  - /auth - logowanie/rejestracja
+  - /dashboard - panel główny
+  - /courses - lista kursów
+  - /courses/:id - szczegóły kursu
+  - /admin - panel administratora
+  - /profile - profil użytkownika
 
-### 🧭 Advanced Navigation System
-- **Top Navigation Bar**: 
-  - Logo "TrainingHub" z link do dashboard
-  - Main menu (Dashboard, Kursy) z active states
-  - User avatar dropdown z email, role, actions
-  - Responsive hamburger menu dla mobile
-- **Smart Breadcrumbs**: 
-  - Auto-generated navigation path z route mapping
-  - Custom breadcrumbs override support
-  - Clickable path navigation z icons
-  - Dynamic course titles w breadcrumbs
-- **Protected Routing**: Role-based access control z automatic redirects
-- **Layout Architecture**: Hierarchical layout system (AppLayout > ProtectedLayout)
-- **Mobile Navigation**: Responsive hamburger menu z smooth animations
+### API Integration
+- **Services Layer**
+  - auth.service - autoryzacja
+  - course.service - zarządzanie kursami
+  - user.service - zarządzanie użytkownikami
 
-### 📚 Enhanced Course Management
-- **CourseListPage**: 
-  - Advanced filtering system (active/finished/all)
-  - Empty states z call-to-action buttons
-  - Role-based create course functionality
-  - Real-time enrollment counts
-- **CourseDetailsPage**: 
-  - Comprehensive course view z enrollment management
-  - Participant management dla admin/trainer
-  - Live enrollment status checking
-  - Contextual action buttons
-- **CourseCard & CourseModal**: 
-  - Reusable course components
-  - Form validation z React Hook Form + Zod
-  - Real-time status updates
-- **Real-time Updates**: Live enrollment counts i status updates
-- **CRUD Operations**: Complete course lifecycle management
+- **Axios Configuration**
+  - Interceptors dla tokenów
+  - Error handling
+  - Request/response transformacje
 
-### 👤 User Experience Enhancements
-- **Dashboard Redesign**:
-  - Personalized welcome screen z user avatar
-  - Quick action cards z navigation
-  - Role-appropriate content display
-- **Profile Management**:
-  - User profile page z comprehensive information
-  - Settings placeholders dla future features
-  - Role display z proper translations
-- **Authentication Flow**:
-  - Success messaging system
-  - Proper redirects post-registration/login
-  - Error handling z user-friendly messages
+### Styling
+- **Tailwind CSS**
+  - Utility-first approach
+  - Custom components
+  - Responsive design
+  - Dark mode support
 
-### 🔧 Technical Architecture Improvements
-- **Layout System Architecture**:
-  ```
-  AppLayout (base wrapper)
-  ├─ Navbar (top navigation)
-  ├─ Breadcrumbs (path navigation)  
-  ├─ Page Header (title + actions)
-  ├─ Main Content (page content)
-  └─ Footer (app information)
-  ```
-- **ProtectedLayout**: Auth wrapper z automatic redirects
-- **Component Architecture**: Modular, reusable components z TypeScript
-- **API Integration**: Unified service layer z proper error handling
-- **Form Management**: React Hook Form + Zod validation
-- **Code Organization**: Clear separation of concerns (layout/pages/components)
-- **Performance**: Lazy loading, optimized re-renders, efficient updates
+### Performance
+- **Code Splitting**
+  - Lazy loading komponentów
+  - Route-based splitting
+  - Dynamic imports
 
-### 🎯 User Interface Patterns
-- **Consistent Color Scheme**: Blue primary colors z proper contrast
-- **Typography Hierarchy**: Proper heading scales i text sizes
-- **Spacing System**: Consistent margins, padding, gaps
-- **Icon Usage**: Meaningful icons throughout interface
-- **Button States**: Loading, disabled, hover states
-- **Form Validation**: Real-time feedback z error styling
-- **Modal System**: Centered modals z backdrop handling
-- **Table Design**: Responsive tables z proper headers
+- **Optimization**
+  - Memoization (useMemo, useCallback)
+  - Virtual scrolling dla list
+  - Image optimization
+  - Bundle size monitoring
 
-### 🛡️ Security & Authorization
-- **JWT Implementation**: Secure token-based authentication
-- **Role-Based Access**: Granular permissions per user role
-- **Protected Routes**: Automatic auth checks z redirects
-- **Token Management**: Auto-refresh i secure storage
-- **Input Validation**: Server i client-side validation z Zod
 
-### 📱 Responsive Design Features
-- **Mobile-First**: Design starts z mobile i scales up
-- **Breakpoint System**: sm/md/lg/xl responsive breakpoints
-- **Touch-Friendly**: Proper touch targets i spacing
-- **Hamburger Navigation**: Collapsible mobile menu
-- **Adaptive Content**: Content adapts to screen sizes
-- **Performance**: Optimized dla mobile networks
 
-### 🚀 Developer Experience
-- **TypeScript Everywhere**: Full type safety w całej aplikacji
-- **Component Exports**: Centralized exports z index files
-- **Prop Interfaces**: Well-defined component interfaces
-- **Reusable Patterns**: Layout, Button, Form patterns
-- **Error Boundaries**: Graceful error handling
-- **Development Tools**: Hot reload, TypeScript checking
 
-## Jak używać aplikacji
 
-### 🧭 Navigation Guide
-1. **Główna nawigacja**: 
-   - Kliknij logo "TrainingHub" aby wrócić do Dashboard
-   - Użyj menu "Dashboard" i "Kursy" w top navbar
-   - Na mobile: hamburger menu (☰) w prawym górnym rogu
 
-2. **Breadcrumbs Navigation**:
-   - Automatyczne ślady nawigacji: Home > Kursy > Szczegóły
-   - Każdy element breadcrumb jest klikalny (oprócz obecnej strony)
-   - Pokazuje aktualną lokalizację w aplikacji
-
-3. **User Menu**:
-   - Kliknij avatar użytkownika (pierwsza litera email) w prawym górnym rogu
-   - Dostęp do profilu i wylogowania
-   - Wyświetla aktualną rolę użytkownika
-
-### 📚 Course Management Workflow
-1. **Przeglądanie kursów**:
-   - Idź do "Kursy" w głównym menu
-   - Filtruj kursy: Wszystkie / Aktywne / Zakończone
-   - Kliknij "Zobacz szczegóły" na karcie kursu
-
-2. **Zarządzanie kursami** (Admin/Trainer):
-   - Przycisk "Dodaj nowy kurs" na liście kursów
-   - Na szczegółach kursu: "Edytuj kurs" / "Usuń kurs"
-   - Modal z formularzem tworzenia/edycji
-
-3. **Zapisy na kursy** (Participant):
-   - Na liście lub szczegółach kursu: "Zapisz się" / "Wypisz się"
-   - Real-time aktualizacja statusu zapisu
-   - Tylko aktywne kursy pozwalają na zapisy
-
-### 👥 User Roles & Permissions
-- **PARTICIPANT**: 
-  - Przeglądanie kursów
-  - Zapisywanie/wypisywanie się z kursów
-  - Dostęp do własnego profilu
-- **TRAINER**: 
-  - Wszystko co Participant +
-  - Tworzenie, edycja, usuwanie kursów
-  - Podgląd listy uczestników kursu
-- **ADMIN**: 
-  - Wszystko co Trainer +
-  - Zarządzanie użytkownikami (planned)
-  - Dostęp do statystyk (planned)
-
-### 📱 Mobile Experience
-- **Responsive Design**: Aplikacja automatycznie dostosowuje się do rozmiaru ekranu
-- **Touch-Friendly**: Wszystkie elementy są odpowiednio duże dla dotknięć
-- **Hamburger Menu**: Na mobile główna nawigacja ukrywa się pod przycisk ☰
-- **Optimized Forms**: Formularze dostosowane do klawiatury mobilnej
-
-## Development Workflow
-
-### Code Quality
-- **TypeScript Strict Mode**: Full type safety
-- **ESLint + Prettier**: Consistent code formatting
-- **Git Hooks**: Pre-commit validation
-- **Component Testing**: React Testing Library
-
-### API Development
-- **Domain-Driven Design**: Clean architecture z entities, services, repositories
-- **Error Handling**: Custom exceptions z proper HTTP status codes
-- **Validation**: Zod schemas na client i server side
-- **Documentation**: OpenAPI/Swagger specs (planned)
-
-## Deployment
-
-### Development
-```bash
-# Start backend
-cd api && bun run dev
-
-# Start frontend  
-cd web && bun run dev
-
-# Database migrations
-cd api && bunx prisma migrate dev
-```
-
-### Production
-```bash
-# Docker Compose
-docker-compose up --build
-
-# Manual deployment
-cd api && bun run build && bun run start
-cd web && bun run build && bun run preview
-```
-
-## Troubleshooting
-
-### Common Issues
-1. **Port conflicts**: Zmień porty w docker-compose.yml
-2. **Database locks**: Restart containers lub usuń dev.db
-3. **CORS errors**: Sprawdź konfigurację w api/src/index.ts
-4. **Build errors**: Wyczyść node_modules i reinstaluj dependencies
-
-### Logs
-```bash
-# Backend logs
-cd api && bun run dev --verbose
-
-# Frontend logs  
-cd web && bun run dev --debug
-
-# Docker logs
-docker-compose logs -f api
-docker-compose logs -f web
-```
-
-## Contributing
-
-### Development Setup
-1. Fork repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Install dependencies: `bun install` w api/ i web/
-4. Run tests: `bun test`
-5. Commit changes: `git commit -m 'Add amazing feature'`
-6. Push branch: `git push origin feature/amazing-feature`
-7. Create Pull Request
-
-### Code Standards
-- Use TypeScript strict mode
-- Follow existing component patterns
-- Add tests for new features
-- Update documentation
-- Use conventional commits
-
----
 
