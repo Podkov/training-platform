@@ -132,6 +132,8 @@ docker-compose down
 docker-compose logs -f api    # logi API
 docker-compose logs -f web    # logi frontendu
 
+```
+
 1. **Problem z CORS**
    - Sprawdź czy w pliku `api/.env` masz poprawnie ustawioną zmienną `CORS_ORIGIN`
    - Dla development: `CORS_ORIGIN="http://localhost,http://localhost:3000"`
