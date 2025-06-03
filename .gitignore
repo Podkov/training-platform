@@ -1,7 +1,7 @@
 # Node.js
 node_modules/
 npm-debug.log*
-.env
+
 Plan.md
 Phase3.md
 Frontend.md

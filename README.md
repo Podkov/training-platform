@@ -102,7 +102,7 @@ cd training-platform
 
 3. Skonfiguruj zmienne środowiskowe:
 
-Przykładowa zawartość pliku .env
+Przykładowa zawartość pliku api/.env
 # Ścieżka do bazy danych SQLite
 DATABASE_URL="file:../../data/dev.db"
 
